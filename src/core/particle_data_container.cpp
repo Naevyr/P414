@@ -24,7 +24,7 @@ Particle ParticleDataContainer::add_particle(const Ref<ElementalParticleResource
     m_colors[particle] = p_particleTemplate->get_color();
     m_particles.push_back(particle);
 
-
+    return particle;
 }
 
 

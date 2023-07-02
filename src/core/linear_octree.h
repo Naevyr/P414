@@ -89,28 +89,14 @@ namespace PSS
 
 
         public:
+            LinearOctree();
             LinearOctree(godot::Vector3 position, float size, unsigned int nodeCapacity, unsigned int maxLevel);
 
             void build();
             std::vector<Particle> query(godot::Vector3 position, float size) const;
             void insert(Particle particle, godot::Vector3 p_position, float p_size);
-            
 
             bool is_initialized() const;
 
-
-
-
-
-
-
-
-
-
-
-
-
-        
-        
     };
 }

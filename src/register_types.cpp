@@ -26,7 +26,7 @@ void initialize_example_module(ModuleInitializationLevel p_level) {
 
     ClassDB::register_class<ElementalParticleResource>();
     ClassDB::register_class<ElementalMeshResource>();
-    ClassDB::register_abstract_class<ParticleDataContainer>();
+
     ClassDB::register_class<ParticleBuffer>();
 
     

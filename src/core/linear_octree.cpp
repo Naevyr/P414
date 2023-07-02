@@ -394,12 +394,10 @@ std::vector<Particle> LinearOctree::query(Vector3 position, float size) const
 }
 
 
-
-
-
-
 bool LinearOctree::is_initialized () const
 {
     return m_initialized;
 }
 
+
+LinearOctree::LinearOctree () {};

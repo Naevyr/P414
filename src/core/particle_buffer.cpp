@@ -24,20 +24,20 @@ Particle ParticleBuffer::add_particle(const Ref<ElementalParticleResource> parti
         m_octree = LinearOctree(Vector3(0,0,0),m_bounds->get_size()[m_bounds->get_size().max_axis_index()],150,500);
 
 
-    Particle particle = ParticleDataContainer::add_particle(particleTemplate,position);
+    Particle particle = m_data.add_particle(particleTemplate,position);
     m_octree.insert(particle,position,particleTemplate->get_size());
     m_particleCount += 1;
 
 
     return particle;
 }
-std::vector<Particle> ParticleBuffer::add_cluster(const Ref<ElementalParticleResource> particleTemplate, const Ref<PackedVector3Array> positions)
+std::vector<Particle> ParticleBuffer::add_cluster(const Ref<ElementalParticleResource> particleTemplate, const PackedVector3Array& positions)
 {
 
     std::vector<Particle> particles{};
-    for (size_t i = 0; i < positions->size(); i++)
+    for (size_t i = 0; i < positions.size(); i++)
     {
-        Particle particle = add_particle(particleTemplate,positions->operator[](i));
+        Particle particle = add_particle(particleTemplate,positions.operator[](i));
         particles.push_back(particle);
     }
     
@@ -77,3 +77,11 @@ void ParticleBuffer::set_bounds(Ref<BoxMesh> convexBounds)
     
     m_bounds = convexBounds;
 }
+
+ParticleDataContainer& ParticleBuffer::get_data()
+{
+    return m_data;
+}
+
+
+ParticleBuffer::ParticleBuffer() {}

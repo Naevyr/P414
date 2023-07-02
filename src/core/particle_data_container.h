@@ -13,16 +13,15 @@
 
 #include <queue>
 #include <vector>
-#include <span>
+
 
 
 namespace PSS
 {
-    class ParticleDataContainer : public godot::Resource
+    class ParticleDataContainer 
     {   
 
-        GDCLASS(ParticleDataContainer, godot::Resource)
-
+       
 
         protected:
             godot::PackedVector3Array m_positions;

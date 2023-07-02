@@ -11,11 +11,12 @@ using namespace godot;
 PackedByteArray ParticleGPUEncoder::encode_buffer_ordered (Ref<ParticleBuffer> buffer,godot::Vector3 cameraPosition)
 {
     PackedByteArray bytes = PackedByteArray();
-    std::vector<Particle> ordered = std::vector<Particle>(buffer->get_particles());
+    ParticleDataContainer & data = buffer->get_data();
+    std::vector<Particle> ordered = std::vector<Particle>(buffer->get_data().get_particles());
 
-    std::sort(ordered.begin(),ordered.end(), [buffer,cameraPosition](Particle a, Particle b) {
+    std::sort(ordered.begin(),ordered.end(), [data,cameraPosition](Particle a, Particle b) {
         // You can use 'arg' within the lambda expression
-        return buffer->get_position(a).distance_to(cameraPosition) > buffer->get_position(b).distance_to(cameraPosition);
+        return data.get_position(a).distance_to(cameraPosition) > data.get_position(b).distance_to(cameraPosition);
     });
     
  
@@ -30,6 +31,8 @@ PackedByteArray ParticleGPUEncoder::encode_buffer_ordered (Ref<ParticleBuffer> b
     {
        bytes.append_array(encode_particle(ordered[i],buffer));
     }
+
+    return bytes;
     
 }
 
@@ -37,10 +40,10 @@ PackedByteArray ParticleGPUEncoder::encode_buffer_ordered (Ref<ParticleBuffer> b
 godot::PackedByteArray ParticleGPUEncoder::encode_particle(Particle particle,Ref<ParticleBuffer> buffer)
 {
     PackedByteArray bytes;
-    bytes.encode_var(0,buffer->get_position(particle));
-    bytes.encode_float(12, buffer->get_size(particle));
+    bytes.encode_var(0,buffer->get_data().get_position(particle));
+    bytes.encode_float(12, buffer->get_data().get_size(particle));
 
-    Color color =  buffer->get_particle_color(particle);
+    Color color =  buffer->get_data().get_particle_color(particle);
     bytes.encode_var(16,Vector3(color.r,color.g,color.b));
 
 

@@ -22,18 +22,20 @@ void ParticlePhysicsSystem::_bind_methods()
 
 void ParticlePhysicsSystem::_ready()
 {
-    Node::_ready();
-
-    if (Engine::get_singleton()->is_editor_hint())
-        set_process_mode(Node::ProcessMode::PROCESS_MODE_DISABLED);
-
-
-    ElementalSpellSystem * system = Node::cast_to<ElementalSpellSystem>(get_parent());
-
-
-    if(!system)
-        throw std::runtime_error("ParticlePhysicsSystem is not a child of a ElementalSpellSystem node.");
+    Node::_ready();  
     
+    
+    ElementalSpellSystem * system = Node::cast_to<ElementalSpellSystem>(get_parent());
+    if (Engine::get_singleton()->is_editor_hint())
+    {
+        if(!system)
+            throw std::runtime_error("ParticlePhysicsSystem is not a child of a ElementalSpellSystem node.");
+    
+        set_process_mode(Node::ProcessMode::PROCESS_MODE_DISABLED);
+        return;
+    }
+    
+
 
    
 

@@ -28,7 +28,10 @@ void ParticleRenderer::_ready()
 
     Node::_ready();
     if (Engine::get_singleton()->is_editor_hint())
+    {
         set_process_mode(Node::ProcessMode::PROCESS_MODE_DISABLED);
+        return;
+    }
     
     auto particleSystem = Node::cast_to<ElementalSpellSystem>(get_parent());
  
