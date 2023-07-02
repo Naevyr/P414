@@ -7,10 +7,13 @@
 #include <godot_cpp/godot.hpp>
 
 
-#include "core/particle_system.h"
-#include "core/particle_mesh.h"
+#include "core/elemental_spell_system.h"
+#include "core/elemental_particle_resource.h"
+#include "core/particle_data_container.h"
+#include "core/particle_buffer.h"
+#include "physics/particle_physics_system.h"
 #include "rendering/particle_renderer.h"
-#include "meshes/sphere_particle_mesh.h"
+
 using namespace godot;
 using namespace PSS;
 
@@ -21,11 +24,15 @@ void initialize_example_module(ModuleInitializationLevel p_level) {
         return;
     }
 
-    ClassDB::register_class<ParticleSystem>();
-    ClassDB::register_class<ParticleRenderer>();
-    ClassDB::register_abstract_class<ParticleMesh>();
+    ClassDB::register_class<ElementalParticleResource>();
+    ClassDB::register_class<ElementalMeshResource>();
+    ClassDB::register_abstract_class<ParticleDataContainer>();
     ClassDB::register_class<ParticleBuffer>();
-    ClassDB::register_class<SphereParticleMesh>();
+
+    
+    ClassDB::register_class<ElementalSpellSystem>();
+    ClassDB::register_class<ParticleRenderer>(); 
+    ClassDB::register_class<ParticlePhysicsSystem>();
     
 }
 

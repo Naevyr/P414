@@ -1,4 +1,4 @@
-#include "core/compute_shader.h"
+#include "rendering/compute_shader.h"
 
 
 #include <godot_cpp/classes/resource_loader.hpp>
@@ -143,12 +143,11 @@ void ComputeShader::dispatch(Vector3i p_workgroups)
 
 ComputeShader::ComputeShader(){}
 
-ComputeShader::ComputeShader(std::string p_path, RenderingDevice * p_renderingDevice)
+ComputeShader::ComputeShader(const Ref<RDShaderFile> shader )
 { 
-    m_renderingDevice = p_renderingDevice;
-    const auto resource = ResourceLoader::get_singleton()->load(p_path.c_str());
-    Ref<RDShaderFile> shaderFile = resource;
-    const auto spirV = shaderFile->get_spirv();
+    m_renderingDevice = RenderingServer::get_singleton()->create_local_rendering_device();
+    
+    const auto spirV = shader->get_spirv();
     
     m_shader = m_renderingDevice->shader_create_from_spirv(spirV);
 

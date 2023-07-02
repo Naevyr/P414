@@ -18,7 +18,7 @@ sources = Glob("src/*.cpp")
 sources += Glob("src/core/*.cpp")
 sources += Glob("src/rendering/*.cpp")
 sources += Glob("src/physics/*.cpp")
-sources += Glob("src/meshes/*.cpp")
+
 
 if env["platform"] == "macos":
     library = env.SharedLibrary(

@@ -1,7 +1,7 @@
 #include "core/linear_octree.h"
 
 #include <godot_cpp/variant/vector3.hpp>
-
+#include <array>
 using namespace PSS;
 using namespace godot;
 PSS::LinearOctree::Box::Box(godot::Vector3 p_position, float p_size)
@@ -161,7 +161,7 @@ void PSS::LinearOctree::subdivide(Octan parent)
 
            
 
-            while (parent != UINT_MAX)
+            while (parent != UINT32_MAX)
             {
 
 
@@ -235,7 +235,7 @@ void LinearOctree::insertParticle(Octan octan, Particle particle, Box particleBo
 
     
 
-    while (parent != UINT_MAX)
+    while (parent != UINT32_MAX)
     {
         
         m_octanDynamicData[parent].particleCount += 1;
@@ -265,7 +265,7 @@ LinearOctree::LinearOctree(godot::Vector3 position, float size, unsigned int nod
     octanStaticData.level = 0;
     octanStaticData.box = Box(position,size);
     OctanDynamicData octanDynamicData = OctanDynamicData();
-    octanDynamicData.parent = UINT_MAX;
+    octanDynamicData.parent = UINT32_MAX;
     
 
     m_octanStaticData.push_back(octanStaticData);

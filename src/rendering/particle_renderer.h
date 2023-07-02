@@ -6,17 +6,21 @@
 #include <godot_cpp/classes/ref.hpp>
 #include <godot_cpp/classes/camera3d.hpp>
 #include <godot_cpp/classes/mesh_instance3d.hpp>
+#include <godot_cpp/classes/shader.hpp>
+#include <godot_cpp/classes/rd_shader_file.hpp>
 
-#include "core/particle_system.h"
-#include "core/compute_shader.h"
-using namespace godot;
+
+
+#include "core/elemental_spell_system.h"
+#include "rendering/compute_shader.h"
+
 
 
 
 
 namespace PSS
 {
-    static class RenderingType
+      class RenderingType
     {  
         public:
             static const int DEBUG = 0;
@@ -24,23 +28,31 @@ namespace PSS
     };
 
 
-    class ParticleRenderer : public MeshInstance3D
+    class ParticleRenderer : public godot::MeshInstance3D
     {
-        GDCLASS(ParticleRenderer, MeshInstance3D)
+        GDCLASS(ParticleRenderer, godot::MeshInstance3D)
 
         
         private:
-            const string OVERLAY_SHADER = "res://bin/overlayshader.gdshader";
-            const string RENDERING_SHADER = "res://bin/shader.glsl";
+          
+
+            godot::Ref<godot::Shader> m_overlayShader;
+            godot::Ref<godot::RDShaderFile> m_renderingShader;
+
+            ComputeShader m_computeShader;
 
 
 
-            Vector2i m_viewportSize = Vector2i(0,0);
-            int m_rendering_type = 0;
+
             
+            godot::Viewport* m_viewport;
+
+
+
+            bool m_compatibilityRendering;
             
-            std::map<int,ComputeShader> m_shaders;
-            Ref<ImageTexture> m_texture;
+       
+            godot::Ref<godot::ImageTexture> m_texture;
         
 
             //godot::String m_warning_string;
@@ -53,17 +65,29 @@ namespace PSS
         protected:
 
             void render_debug();
-            void get_data(int p_rendering_type, int p_binding, PackedByteArray& r_buffer);
-            Camera3D * get_editor_camera();
+   
+            godot::Camera3D * get_editor_camera();
 
             static void _bind_methods();
             //godot::PackedStringArray _get_configuration_warnings();
         public:
       
             
-            //TODO: Temporary enum property fix for GDExtension 
-            inline void set_rendering_type(int p_type) {  m_rendering_type = p_type; };
-            inline int get_rendering_type() const { return  m_rendering_type; }
+            //Export
+            void set_compatibility_rendering(bool type);
+            bool get_compatibility_rendering() const;
+
+
+            //Export
+            void set_overlay_shader(godot::Ref<godot::Shader> shader);
+            godot::Ref<godot::Shader> get_overlay_shader() const;
+
+            void set_rendering_shader(godot::Ref<godot::RDShaderFile> shader);
+            godot::Ref<godot::RDShaderFile> get_rendering_shader() const;
+
+
+
+
 
             void _ready();
             void _process(double p_delta);

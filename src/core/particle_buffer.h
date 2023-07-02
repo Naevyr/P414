@@ -21,14 +21,14 @@ namespace PSS
     //You can swap between buffer for scene load or stuff like that
 
 
-    class ParticleBuffer : public godot::Resource, public ParticleDataContainer
+    class ParticleBuffer : public ParticleDataContainer
     {   
         
         typedef unsigned int Particle;
         
 
      
-        GDCLASS(ParticleBuffer,Resource)
+        GDCLASS(ParticleBuffer, ParticleDataContainer)
         private:
             
             
@@ -38,7 +38,7 @@ namespace PSS
             
             LinearOctree m_octree;
         
-            godot::Ref<BoxMesh> m_bounds;
+            godot::Ref<godot::BoxMesh> m_bounds;
 
 
         protected:
@@ -55,16 +55,16 @@ namespace PSS
             Particle add_particle(const godot::Ref<ElementalParticleResource> particleTemplate, godot::Vector3 position);
             std::vector<Particle> add_cluster(const godot::Ref<ElementalParticleResource> particleTemplate, const godot::Ref<godot::PackedVector3Array> positions);
 
-            void add_mesh(const Ref<ElementalMeshResource> mesh);
+            void add_mesh(const godot::Ref<ElementalMeshResource> mesh);
 
 
             //Export
             unsigned int get_particle_count() const;
            
 
-
-            godot::Ref<BoxMesh> get_convex_bounds() const;
-            void set_convex_bounds(godot::Ref<BoxMesh> convexBounds);
+            //Export
+            void set_bounds(godot::Ref<godot::BoxMesh> convexBounds);
+            godot::Ref<godot::BoxMesh> get_bounds() const;
 
             
 

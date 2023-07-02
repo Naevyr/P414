@@ -9,7 +9,7 @@ namespace PSS
 {
     class ElementalMeshResource : public godot::Resource
     {
-        GDCLASS(ElementalMeshResource,Resource)
+        GDCLASS(ElementalMeshResource, godot::Resource)
 
         
         private:
@@ -20,9 +20,9 @@ namespace PSS
             godot::PackedVector3Array m_meshNormals;
             godot::PackedVector3Array m_meshPositions;
             
-            size_t m_sampleSize;
+            int m_sampleSize;
 
-            godot::Ref<Mesh> m_convexMesh;
+            godot::Ref<godot::Mesh> m_convexMesh;
             
         private:
             bool isPointInsideMesh(godot::Vector3);
@@ -41,19 +41,19 @@ namespace PSS
 
 
         //Export
-        godot::Ref<PackedVector3Array> get_position_array() const;
-        
+        void set_position_array(godot::PackedVector3Array array);
+        godot::PackedVector3Array get_position_array() const;
         //Export
-        godot::Mesh get_convex_mesh();
-        void set_convex_mesh(godot::Mesh p_mesh);
+        void set_convex_mesh(godot::Ref<godot::Mesh> mesh);
+        godot::Ref<godot::Mesh> get_convex_mesh() const;
         
         //Export 
-        unsigned int get_sample_size();
-        void set_sample_size( unsigned int p_size);
+        void set_sample_size( int size);
+        int get_sample_size() const;
 
         //Export
-        godot::Ref<ElementalParticleResource> get_template_particle();
-        void set_template_particle(godot::Ref<ElementalParticleResource> p_templateParticle);
+        void set_template_particle(godot::Ref<ElementalParticleResource> templateParticle);
+        godot::Ref<ElementalParticleResource> get_template_particle() const;
 
 
     };

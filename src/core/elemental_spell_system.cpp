@@ -8,57 +8,33 @@ using namespace godot;
 void ElementalSpellSystem::_bind_methods() 
 {
 
-}
-
-
-
-
-
-void ElementalSpellSystem::_ready()
-{
-    Node::_ready();
-    if (Engine::get_singleton()->is_editor_hint())
-        set_process_mode(Node::ProcessMode::PROCESS_MODE_DISABLED);
-
-
-    //m_particleBuffer->init(get_rendering_device());
-    //m_particleBuffer->sync();
-}
-
-void ElementalSpellSystem::_process(double delta)
-{
-  
-    Node::_process(delta);
-    
-  
-}
-ElementalSpellSystem::ElementalSpellSystem()
-{
-
-
-   
-
-
+    ClassDB::bind_method(D_METHOD("set_particle_buffer"),&ElementalSpellSystem::set_particle_buffer);
+    ClassDB::bind_method(D_METHOD("get_particle_buffer"),&ElementalSpellSystem::get_particle_buffer);
+    ADD_PROPERTY(godot::PropertyInfo(godot::Variant::OBJECT, "particle_buffer",
+        PROPERTY_HINT_RESOURCE_TYPE, "ParticleBuffer"), "set_particle_buffer", "get_particle_buffer");
     
 
 
-
 }
 
 
 
-
-
-
-
-
+void ElementalSpellSystem::set_particle_buffer(Ref<ParticleBuffer> particleBuffer)
+{
+    m_particleBuffer = particleBuffer;
+}
 
 Ref<ParticleBuffer> ElementalSpellSystem::get_particle_buffer() const
 {
     return m_particleBuffer;
 }
 
-void ElementalSpellSystem::set_particle_buffer(Ref<ParticleBuffer> particleBuffer)
+
+ElementalSpellSystem::ElementalSpellSystem()
 {
-    m_particleBuffer = particleBuffer;
+
+
 }
+
+
+

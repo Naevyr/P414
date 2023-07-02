@@ -5,13 +5,33 @@ using namespace godot;
 
 Particle ParticleDataContainer::add_particle(const Ref<ElementalParticleResource> p_particleTemplate, Vector3 p_position)
 {
-    m_positions.append(p_position);
-    m_colors.append(p_particleTemplate->get_color());
+
+
+    Particle particle;
+    if(m_deletedParticles.size() == 0)
+    { 
+        particle = m_positions.size();
+        m_positions.push_back(Vector3());
+        m_colors.push_back(Color());
+    }else
+    {
+        particle = m_deletedParticles.back();
+        m_deletedParticles.pop();
+    }
+    
+
+    m_positions[particle] = p_position;
+    m_colors[particle] = p_particleTemplate->get_color();
+    m_particles.push_back(particle);
+
 
 }
 
 
+ void ParticleDataContainer::_bind_methods()
+ {
 
+ }
 
 
 
@@ -57,6 +77,10 @@ void ParticleDataContainer::set_size(Particle particle, float size)
 
 
 
+const std::vector<Particle>& ParticleDataContainer::get_particles() const
+{
+    return m_particles;
+}
 
 
 ParticleDataContainer::ParticleDataContainer()

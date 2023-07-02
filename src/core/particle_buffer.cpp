@@ -7,6 +7,14 @@ using namespace godot;
 
 void ParticleBuffer::_bind_methods()
 {
+    ClassDB::bind_method(D_METHOD("get_particle_count"),&ParticleBuffer::get_particle_count);
+
+    ClassDB::bind_method(D_METHOD("set_bounds"),&ParticleBuffer::set_bounds);
+    ClassDB::bind_method(D_METHOD("get_bounds"),&ParticleBuffer::get_bounds);    
+    ADD_PROPERTY(godot::PropertyInfo(godot::Variant::OBJECT, "bounds",
+        PROPERTY_HINT_RESOURCE_TYPE, "BoxMesh"), "set_bounds", "get_bounds");
+    
+
 
 }
       
@@ -58,12 +66,12 @@ std::vector<Particle> ParticleBuffer::get_nearby_particles(Vector3 position, flo
 
 
 
-Ref<BoxMesh> ParticleBuffer::get_convex_bounds() const
+Ref<BoxMesh> ParticleBuffer::get_bounds() const
 {
     return m_bounds;
 }
 
-void ParticleBuffer::set_convex_bounds(Ref<BoxMesh> convexBounds)
+void ParticleBuffer::set_bounds(Ref<BoxMesh> convexBounds)
 {
 
     

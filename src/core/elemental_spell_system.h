@@ -16,7 +16,7 @@ namespace PSS
 {
     class ElementalSpellSystem : public godot::Node
     {
-        GDCLASS(ElementalSpellSystem, Node)
+        GDCLASS(ElementalSpellSystem, godot::Node)
         private:
             godot::Ref<ParticleBuffer> m_particleBuffer;
             
@@ -30,13 +30,11 @@ namespace PSS
         public:
 
 
-            void _ready() override;
-            void _process(double delta) override;
+           
         
-        
-        
-            godot::Ref<ParticleBuffer> get_particle_buffer() const; 
+            //Export
             void set_particle_buffer(godot::Ref<ParticleBuffer> particle_buffer);
+            godot::Ref<ParticleBuffer> get_particle_buffer() const; 
         
         
         

@@ -17,50 +17,46 @@ namespace PSS
 
         
 
-
-        struct Box
-        {
-            public:
-            godot::Vector3 position;
-            float size;
-            Box(godot::Vector3 p_position, float p_size);
-        
-             static bool Intersects (Box a, Box b)
+        public: 
+            struct Box
             {
-                return !(a.position.x - a.size > b.position.x + b.size ||
-                a.position.x + a.size < b.position.x - b.size ||
-                a.position.y - a.size > b.position.y + b.size ||
-                a.position.y + a.size < b.position.y - b.size ||
-                a.position.z - a.size > b.position.z + b.size ||
-                a.position.z + a.size < b.position.z - b.size);
-            }
-        };
+                public:
+                    godot::Vector3 position;
+                    float size;
+                    Box(){};
+                    Box(godot::Vector3 p_position, float p_size);
+                
+                    static bool Intersects (Box a, Box b);
+
+            };
 
 
-        typedef unsigned int Octan;
+            typedef unsigned int Octan;
 
-        struct OctanStaticData
-        {
-            Box box{Vector3(),0.0};
-            unsigned int level = 0;
-        };
+            struct OctanStaticData
+            {
+                public:
+                    Box box{godot::Vector3(),0.0};
+                    unsigned int level = 0;
+                    OctanStaticData() {}; 
+            };
 
-        struct OctanDynamicData
-        {
-            bool subdivided = false;
-            unsigned int childCount = 0;
-            unsigned int parent = UINT_MAX;
-            unsigned int particleStartIndex = 0;
-            unsigned int particleCount = 0;
+            struct OctanDynamicData
+            {
+                bool subdivided = false;
+                unsigned int childCount = 0;
+                unsigned int parent = UINT32_MAX;
+                unsigned int particleStartIndex = 0;
+                unsigned int particleCount = 0;
 
-            static int GetOctanLinearIndex(godot::Vector3i position);
-         
-             
-            static godot::Vector3i GetOctanRelativePosition(int index);
-        
-             
+                static int GetOctanLinearIndex(godot::Vector3i position);
+            
+                
+                static godot::Vector3i GetOctanRelativePosition(int index);
+            
+                
 
-        };
+            };
 
 
         private:

@@ -15,7 +15,7 @@ namespace PSS
          
           
 
-        GDCLASS(ParticlePhysicsSystem,Node)
+        GDCLASS(ParticlePhysicsSystem,godot::Node)
         protected:
             static void _bind_methods();
         
