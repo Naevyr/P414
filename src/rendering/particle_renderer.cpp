@@ -27,16 +27,26 @@ void ParticleRenderer::_ready()
 {
 
     Node::_ready();
+
+
+
     if (Engine::get_singleton()->is_editor_hint())
     {
+       
         set_process_mode(Node::ProcessMode::PROCESS_MODE_DISABLED);
         return;
     }
     
     auto particleSystem = Node::cast_to<ElementalSpellSystem>(get_parent());
- 
-    if(!particleSystem)    
-        throw std::runtime_error("ParticleRenderer is not a child of a ElementalSpellSystem node.");
+
+    if (!particleSystem)
+    {
+        ERR_PRINT("ParticleRenderer is not a child of a ElementalSpellSystem node.");
+        set_process_mode(Node::ProcessMode::PROCESS_MODE_DISABLED);
+
+
+        return;
+    }
 
 
 
@@ -55,6 +65,20 @@ void ParticleRenderer::_ready()
     this->set_extra_cull_margin(1e20);
 
     m_viewport = get_viewport();
+    
+    
+    
+    
+    if (!m_viewport->get_camera_3d())
+    {
+        ERR_PRINT("Scene does not contain a Camera3D node.");
+        set_process_mode(Node::ProcessMode::PROCESS_MODE_DISABLED);
+        return;
+    }   
+    
+    
+    
+    
     Vector2 size =m_viewport->get_texture()->get_size();
 
     auto image = Image::create(size.x,size.y,false,Image::FORMAT_RGBAF);
@@ -64,8 +88,8 @@ void ParticleRenderer::_ready()
 
     m_computeShader = ComputeShader(m_renderingShader);
     
-    
-    
+
+
     
     m_computeShader.add_uniform(0,UniformType::Image,image);
     m_computeShader.add_uniform(1,UniformType::Buffer, ParticleGPUEncoder::encode_buffer_ordered(particleSystem->get_particle_buffer(),m_viewport->get_camera_3d()->get_position()));
