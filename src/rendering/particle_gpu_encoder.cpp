@@ -11,6 +11,7 @@ using namespace godot;
 PackedByteArray ParticleGPUEncoder::encode_buffer_ordered (Ref<ParticleBuffer> buffer,godot::Vector3 cameraPosition)
 {
     PackedByteArray bytes = PackedByteArray();
+    bytes.resize(4);
     ParticleDataContainer & data = buffer->get_data();
     std::vector<Particle> ordered = std::vector<Particle>(buffer->get_data().get_particles());
 
@@ -39,7 +40,8 @@ PackedByteArray ParticleGPUEncoder::encode_buffer_ordered (Ref<ParticleBuffer> b
 
 godot::PackedByteArray ParticleGPUEncoder::encode_particle(Particle particle,Ref<ParticleBuffer> buffer)
 {
-    PackedByteArray bytes;
+    PackedByteArray bytes = PackedByteArray();
+    bytes.resize(32);
     bytes.encode_var(0,buffer->get_data().get_position(particle));
     bytes.encode_float(12, buffer->get_data().get_size(particle));
 
@@ -59,7 +61,8 @@ godot::PackedByteArray ParticleGPUEncoder::encode_particle(Particle particle,Ref
 
 godot::PackedByteArray ParticleGPUEncoder::encode_camera(Camera3D * camera)
 {
-    PackedByteArray bytes;
+    PackedByteArray bytes = PackedByteArray();
+    bytes.resize(96);
     bytes.encode_var(0,camera->get_transform());
     bytes.encode_var(48,Vector4(0,0,0,1));
     bytes.encode_float(64,camera->get_fov());
