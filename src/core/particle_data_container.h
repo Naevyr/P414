@@ -30,9 +30,11 @@ namespace PSS
             godot::PackedFloat32Array m_sizes;
 
             std::queue<Particle> m_deletedParticles;
+            std::queue<Particle> m_deletedParticles{};
 
 
             std::vector<Particle> m_particles;
+            std::vector<Particle> m_particles{};
             
 
             static void _bind_methods();

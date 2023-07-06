@@ -84,4 +84,7 @@ ParticleDataContainer& ParticleBuffer::get_data()
 }
 
 
-ParticleBuffer::ParticleBuffer() {}
+{
+    m_data = ParticleDataContainer();
+    m_octree = LinearOctree();
+}

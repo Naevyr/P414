@@ -51,7 +51,7 @@ void ElementalMeshResource::generate_mesh()
     m_meshPositions =  static_cast<PackedVector3Array>(m_convexMesh->surface_get_arrays(0)[(int)Mesh::ARRAY_VERTEX]);
     
 
-    m_sampleSize = Math::min(m_meshPositions.size(),(int64_t) m_sampleSize);
+    m_sampleSize = Math::min(m_meshPositions.size(), (int64_t) Math::clamp(m_sampleSize,150,10000));
         
     generateParticlePositions(Vector3(0,0,0));
 }
@@ -76,7 +76,7 @@ void ElementalMeshResource::generateParticlePositions(Vector3 position)
 {
     
     
-
+    m_exportPositions.clear();
 
     if(!isPointInsideMesh(position))
         return;

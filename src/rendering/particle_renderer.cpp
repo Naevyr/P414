@@ -48,6 +48,7 @@ void ParticleRenderer::_ready()
         return;
     }
 
+    m_particleBuffer = particleSystem->get_particle_buffer();
 
 
     auto mesh = Ref<QuadMesh>();
@@ -93,6 +94,7 @@ void ParticleRenderer::_ready()
     
     m_computeShader.add_uniform(0,UniformType::Image,image);
     m_computeShader.add_uniform(1,UniformType::Buffer, ParticleGPUEncoder::encode_buffer_ordered(particleSystem->get_particle_buffer(),m_viewport->get_camera_3d()->get_position()));
+    m_computeShader.add_uniform(1,UniformType::Buffer, ParticleGPUEncoder::encode_buffer_ordered(m_particleBuffer,m_viewport->get_camera_3d()->get_global_position()));
   
     m_computeShader.add_uniform(2,UniformType::Buffer,ParticleGPUEncoder::encode_camera(m_viewport->get_camera_3d()));
 
@@ -106,8 +108,12 @@ void ParticleRenderer::_ready()
 void ParticleRenderer::_process(double p_delta)
 {
     Node::_process(p_delta);
+    if(Engine::get_singleton()->is_editor_hint())
+        return;
 
+    Node::_process(p_delta);
 
+    m_computeShader.update_uniform(1,ParticleGPUEncoder::encode_buffer_ordered(m_particleBuffer,m_viewport->get_camera_3d()->get_global_position()));
     m_computeShader.update_uniform(2,ParticleGPUEncoder::encode_camera(m_viewport->get_camera_3d()));
     Vector2 size = m_viewport->get_texture()->get_size();
     m_computeShader.dispatch(Vector3i(size.x,size.y,1));

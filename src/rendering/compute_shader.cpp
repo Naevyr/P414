@@ -61,13 +61,18 @@ void ComputeShader::add_uniform(int32_t p_binding ,UniformType p_type,const Pack
     m_uniforms[p_binding].uniform.set_binding(p_binding);
     auto size = p_data.size();
     auto buffer = m_renderingDevice->storage_buffer_create(size,p_data);
+    m_uniforms[p_binding].uniform.clear_ids();
     m_uniforms[p_binding].uniform.add_id(buffer);
 
     m_uniforms[p_binding].buffer = buffer;
     
+    m_uniforms[p_binding].buffer = buffer;
     
 
 
+  
+ 
+    m_uniformSizes.insert_or_assign(p_binding,p_data.size());
 
     
 }
@@ -103,6 +108,14 @@ void ComputeShader::update_uniform(int32_t p_binding,const PackedByteArray& p_da
         m_renderingDevice->texture_update(m_uniforms[p_binding].buffer,0, p_data);
     else
         m_renderingDevice->buffer_update(m_uniforms[p_binding].buffer,0,p_data.size(), p_data);
+    {
+        //Regenerates the uniform if size is bigger than before, workaround until a better option is available
+        if(m_uniformSizes.find(p_binding) == m_uniformSizes.end() || m_uniformSizes[p_binding] < p_data.size())
+            add_uniform(p_binding,UniformType::Buffer,p_data);
+        else
+            m_renderingDevice->buffer_update(m_uniforms[p_binding].buffer,0,p_data.size(), p_data);
+
+    }
 }
 void ComputeShader::compile_shader()
 {   

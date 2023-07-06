@@ -13,6 +13,7 @@ Particle ParticleDataContainer::add_particle(const Ref<ElementalParticleResource
         particle = m_positions.size();
         m_positions.push_back(Vector3());
         m_colors.push_back(Color());
+        m_sizes.push_back(0);
     }else
     {
         particle = m_deletedParticles.back();
@@ -22,6 +23,7 @@ Particle ParticleDataContainer::add_particle(const Ref<ElementalParticleResource
 
     m_positions[particle] = p_position;
     m_colors[particle] = p_particleTemplate->get_color();
+    m_sizes[particle] = p_particleTemplate->get_size();
     m_particles.push_back(particle);
 
     return particle;

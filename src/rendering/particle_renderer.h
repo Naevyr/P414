@@ -39,6 +39,7 @@ namespace PSS
             godot::Ref<godot::Shader> m_overlayShader;
             godot::Ref<godot::RDShaderFile> m_renderingShader;
 
+            godot::Ref<ParticleBuffer> m_particleBuffer;
             ComputeShader m_computeShader;
 
 

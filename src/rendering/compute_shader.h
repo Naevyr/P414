@@ -38,6 +38,7 @@ namespace PSS
         private:
             
             std::map<int32_t,ShaderUniform> m_uniforms;
+            std::map<int32_t,size_t> m_uniformSizes;
             godot::RID m_shader;
             godot::RID m_uniform_set;
             godot::RID m_pipeline;
