@@ -1,11 +1,11 @@
 #include "core/particle_data_container.h"
-
+#include <godot_cpp/classes/random_number_generator.hpp>
 using namespace PSS;
 using namespace godot;
 
 Particle ParticleDataContainer::add_particle(const Ref<ElementalParticleResource> p_particleTemplate, Vector3 p_position)
 {
-
+     
 
     Particle particle;
     if(m_deletedParticles.size() == 0)
@@ -22,7 +22,14 @@ Particle ParticleDataContainer::add_particle(const Ref<ElementalParticleResource
     
 
     m_positions[particle] = p_position;
-    m_colors[particle] = p_particleTemplate->get_color();
+    RandomNumberGenerator r{};
+    Color color = Color(r.randf(),r.randf(),r.randf());
+
+    m_colors[particle] = color;
+    
+    
+    
+    //m_colors[particle] = p_particleTemplate->get_color();
     m_sizes[particle] = p_particleTemplate->get_size();
     m_particles.push_back(particle);
 
