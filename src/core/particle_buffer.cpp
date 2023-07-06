@@ -48,7 +48,9 @@ std::vector<Particle> ParticleBuffer::add_cluster(const Ref<ElementalParticleRes
 
 void ParticleBuffer::add_mesh(const Ref<ElementalMeshResource> mesh)
 {
-    //Finisci di convertire tutte le robe ref, funzioni che mancano e comincia a vedere il rendering se e come funziona
+    add_cluster(mesh->get_template_particle(),mesh->get_position_array());
+        
+   
 }
 
 
@@ -84,6 +86,7 @@ ParticleDataContainer& ParticleBuffer::get_data()
 }
 
 
+ParticleBuffer::ParticleBuffer() 
 {
     m_data = ParticleDataContainer();
     m_octree = LinearOctree();

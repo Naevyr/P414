@@ -29,11 +29,9 @@ namespace PSS
             godot::PackedColorArray m_colors;
             godot::PackedFloat32Array m_sizes;
 
-            std::queue<Particle> m_deletedParticles;
             std::queue<Particle> m_deletedParticles{};
 
 
-            std::vector<Particle> m_particles;
             std::vector<Particle> m_particles{};
             
 
