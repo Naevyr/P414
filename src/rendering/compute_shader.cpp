@@ -64,7 +64,6 @@ void ComputeShader::add_uniform(int32_t p_binding ,UniformType p_type,const Pack
     m_uniforms[p_binding].uniform.clear_ids();
     m_uniforms[p_binding].uniform.add_id(buffer);
 
-    m_uniforms[p_binding].buffer = buffer;
     
     m_uniforms[p_binding].buffer = buffer;
     
