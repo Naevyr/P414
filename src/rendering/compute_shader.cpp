@@ -107,7 +107,6 @@ void ComputeShader::update_uniform(int32_t p_binding,const PackedByteArray& p_da
     if(m_uniforms[p_binding].type == UniformType::Image)
         m_renderingDevice->texture_update(m_uniforms[p_binding].buffer,0, p_data);
     else
-        m_renderingDevice->buffer_update(m_uniforms[p_binding].buffer,0,p_data.size(), p_data);
     {
         //Regenerates the uniform if size is bigger than before, workaround until a better option is available
         if(m_uniformSizes.find(p_binding) == m_uniformSizes.end() || m_uniformSizes[p_binding] < p_data.size())
