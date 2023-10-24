@@ -21,7 +21,7 @@ bool PSS::LinearOctree::Box::Intersects (Box a, Box b)
 }
 
 
-int LinearOctree::GetOctanLinearIndex(godot::Vector3i position) 
+int LinearOctree::GetOctanLinearIndex(godot::Vector3 position) 
 {
     
 
@@ -36,19 +36,19 @@ int LinearOctree::GetOctanLinearIndex(godot::Vector3i position)
 }
 
 
-godot::Vector3i LinearOctree::GetOctanRelativePosition(int index)
+godot::Vector3 LinearOctree::GetOctanRelativePosition(int index)
 {
 
     switch(index)
     {
-        case 0: return godot::Vector3i(1,1,1);
-        case 1: return godot::Vector3i(-1,1,1);
-        case 2: return godot::Vector3i(1,1,-1);
-        case 3: return godot::Vector3i(-1,1,-1);
-        case 4: return godot::Vector3i(1,-1,1);
-        case 5: return godot::Vector3i(-1,-1,1);
-        case 6: return godot::Vector3i(1,-1,-1);
-        case 7: return godot::Vector3i(-1,-1,-1);
+        case 0: return godot::Vector3(1,1,1);
+        case 1: return godot::Vector3(-1,1,1);
+        case 2: return godot::Vector3(1,1,-1);
+        case 3: return godot::Vector3(-1,1,-1);
+        case 4: return godot::Vector3(1,-1,1);
+        case 5: return godot::Vector3(-1,-1,1);
+        case 6: return godot::Vector3(1,-1,-1);
+        case 7: return godot::Vector3(-1,-1,-1);
     }
 
 }
@@ -65,8 +65,7 @@ void PSS::LinearOctree::subdivide(Octan parent)
 
     std::vector<Particle> orderedParticles(particleCount * 8);
     std::vector<Box> orderedParticlesBoxes(particleCount * 8);
-    std::array<Octan,8> particleCountPerOctan = std::array<Octan,8>();
-
+    int particleCountPerOctan[8] = {0};
 
     //Reorder per octans
     for (int i = m_octans[parent].particleStartIndex ; i < m_octans[parent].particleStartIndex + m_octans[parent].particleCount; i++)
@@ -96,7 +95,7 @@ void PSS::LinearOctree::subdivide(Octan parent)
             {
                 OctanData childData{};
                 
-                childData.box = Box{m_octans[parent].box.position + GetOctanRelativePosition(o) * m_octans[parent].box.size  / 2.0f ,m_octans[parent].box.size / 2.0f};
+                childData.box = Box{m_octans[parent].box.position + GetOctanRelativePosition(o) * m_octans[parent].box.size  / 2.0f , m_octans[parent].box.size / 2.0f};
                 
                 childData.level = m_octans[parent].level + 1;
                 childData.childCount = 0;
@@ -107,7 +106,7 @@ void PSS::LinearOctree::subdivide(Octan parent)
                 
                 
                 Octan child = parent + o + 1;
-                if(child <= m_octans.size())
+                if(m_octans.size() <= child)
                 {
                     m_octans.push_back(childData);
                  
@@ -132,8 +131,18 @@ void PSS::LinearOctree::subdivide(Octan parent)
             }
 
 
+        
             
-            for (int i = parent + m_octans[parent].childCount; i <  m_octans.size(); i++)
+         
+
+
+            m_octans[parent].subdivided = true;
+            m_octans[parent].childCount += 8;
+            
+
+            
+            
+            for (int i = parent + m_octans[parent].childCount + 1; i <  m_octans.size(); i++)
             {
                 
                 if(m_octans[i].parent > parent)
@@ -143,16 +152,7 @@ void PSS::LinearOctree::subdivide(Octan parent)
                 }
             }
 
-        
-            
-         
 
-
-            m_octans[parent].subdivided = true;
-            m_octans[parent].childCount += 8;
-            //octans[parentIndex] = parent;
-
-       
             parent = m_octans[parent].parent;
 
            
@@ -164,20 +164,7 @@ void PSS::LinearOctree::subdivide(Octan parent)
                 m_octans[parent].childCount += 8;
                 parent = m_octans[parent].parent;
 
-                /*
                 
-                
-                OctanDynamicData grandParentData = m_octanDynamicData[parent]; 
-
-                grandParentData.childCount += 8;
-
-                octans[parentIndex] = grandParent;
-
-            
-               
-                
-                parent = octans[parentIndex].parent;
-                */
             }
 
         
@@ -203,12 +190,8 @@ void LinearOctree::insertParticle(Octan octan, Particle particle, Box particleBo
 
     //Translates all octans's range next to the current by one, since we are appending a particle behind all the particles of those octans
     for(int i = octan + m_octans[octan].childCount + 1; i < m_octans.size(); i++)
-
     {
-        
         m_octans[i].particleStartIndex += 1;
-       
-
     }
 
     m_octans[octan].particleCount += 1 ;
@@ -222,39 +205,9 @@ void LinearOctree::insertParticle(Octan octan, Particle particle, Box particleBo
     {
         
         m_octans[parent].particleCount += 1;
-        parent = m_octans[octan].parent;
+        parent = m_octans[parent].parent;
 
     }
-
-
-}
-
-LinearOctree::LinearOctree(godot::Vector3 position, float size, unsigned int nodeCapacity, unsigned int maxLevel)
-{
-
-    m_octans = std::vector<OctanData>();
-
-    m_particleBoxes = std::vector<Box>();
-    m_particles = std::vector<Particle>();
-
-    m_particleCount = 0;
-
-
-
-    m_nodeCapacity = nodeCapacity;
-    m_maxLevel = maxLevel;
-    
-    OctanData octanData = OctanData();
-    octanData.level = 0;
-    octanData.box = Box{position,size};
-
-    octanData.parent = UINT32_MAX;
-    
-    
-    m_octans.push_back(octanData);
-
-    m_initialized = true;
-
 
 
 }
@@ -292,7 +245,7 @@ void LinearOctree::insert(Particle particle, Vector3 position, float size)
                         
             if(m_octans[octan].particleCount == m_nodeCapacity)
             {
-                //Cannot add a particle when it's over level
+                //Cannot add a particle when it's over level, this way we avoid trees too deep
                 if(m_octans[octan].level == m_maxLevel)
                     return;
                 subdivide(octan);
@@ -305,7 +258,7 @@ void LinearOctree::insert(Particle particle, Vector3 position, float size)
             
             
             insertParticle(octan,particle,particleBox);
-            ///When is more we subdivide
+          
             return;
 
 
@@ -357,9 +310,9 @@ std::vector<Particle> LinearOctree::query(Vector3 position, float size) const
         }
         
         
-        octan += 1;
         
 
+        
         
     
         for (int i = octanData.particleStartIndex; i <  octanData.particleStartIndex + octanData.particleCount; i++)
@@ -372,7 +325,7 @@ std::vector<Particle> LinearOctree::query(Vector3 position, float size) const
             }
         }
 
-        
+        octan += 1;
 
     }
 
@@ -385,6 +338,45 @@ bool LinearOctree::is_initialized () const
 {
     return m_initialized;
 }
+const std::vector<Particle>& LinearOctree::get_particle_array() const
+{
 
+    return m_particles;
+}
+const std::vector<LinearOctree::OctanData>& LinearOctree::get_octan_data() const
+{
+    return m_octans;
+}
+
+
+LinearOctree::LinearOctree(godot::Vector3 position, float size, unsigned int nodeCapacity, unsigned int maxLevel)
+{
+
+    m_octans = std::vector<OctanData>();
+
+    m_particleBoxes = std::vector<Box>();
+    m_particles = std::vector<Particle>();
+
+    m_particleCount = 0;
+
+
+
+    m_nodeCapacity = nodeCapacity;
+    m_maxLevel = maxLevel;
+    
+    OctanData octanData = OctanData();
+    octanData.level = 0;
+    octanData.box = Box{position,size};
+
+    octanData.parent = UINT32_MAX;
+    
+    
+    m_octans.push_back(octanData);
+
+    m_initialized = true;
+
+
+
+}
 
 LinearOctree::LinearOctree () {};

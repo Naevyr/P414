@@ -43,7 +43,7 @@ namespace PSS
             ComputeShader m_computeShader;
 
 
-
+            
 
             
             godot::Viewport* m_viewport;
@@ -54,10 +54,14 @@ namespace PSS
             
        
             godot::Ref<godot::ImageTexture> m_texture;
-        
+            godot::Ref<godot::Image> m_image;
 
             //godot::String m_warning_string;
 
+
+
+            void initializeShader();
+            void updateShader();
 
             
                     

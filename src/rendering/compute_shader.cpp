@@ -50,25 +50,21 @@ void ComputeShader::add_uniform(int32_t p_binding ,UniformType p_type, Ref<godot
 }
 void ComputeShader::add_uniform(int32_t p_binding ,UniformType p_type,const PackedByteArray& p_data)
 {
-    
+   
     m_uniforms.insert_or_assign(p_binding, ShaderUniform());
-
+ 
     m_uniforms[p_binding].type = p_type;
 
-    
-    
+ 
     m_uniforms[p_binding].uniform.set_uniform_type(RenderingDevice::UniformType::UNIFORM_TYPE_STORAGE_BUFFER);
     m_uniforms[p_binding].uniform.set_binding(p_binding);
     auto size = p_data.size();
     auto buffer = m_renderingDevice->storage_buffer_create(size,p_data);
     m_uniforms[p_binding].uniform.clear_ids();
     m_uniforms[p_binding].uniform.add_id(buffer);
-
     
     m_uniforms[p_binding].buffer = buffer;
     
-
-
   
  
     m_uniformSizes.insert_or_assign(p_binding,p_data.size());
@@ -77,7 +73,7 @@ void ComputeShader::add_uniform(int32_t p_binding ,UniformType p_type,const Pack
 }
 void ComputeShader::add_uniform(int32_t p_binding,UniformType p_type, RID p_bufferRID)
 {
-       
+    
     m_uniforms.insert_or_assign(p_binding, ShaderUniform());
 
     m_uniforms[p_binding].type = p_type;
@@ -90,7 +86,8 @@ void ComputeShader::add_uniform(int32_t p_binding,UniformType p_type, RID p_buff
     m_uniforms[p_binding].uniform.add_id(p_bufferRID);
 
     m_uniforms[p_binding].buffer = p_bufferRID;
-    
+
+ 
 }
 
 godot::PackedByteArray ComputeShader::get_uniform_data(int32_t p_binding)
@@ -122,15 +119,13 @@ void ComputeShader::compile_shader()
 
     for (auto &&uniform :  m_uniforms)
     {
-        
-        m_uniforms_data.append(&uniform.second.uniform);
-        
+        m_uniforms_data.append(&uniform.second.uniform);    
     }
     
   
     m_pipeline = m_renderingDevice->compute_pipeline_create(m_shader);
    
- 
+    m_initialized = true;
 
 }
 
@@ -151,6 +146,11 @@ void ComputeShader::dispatch(Vector3i p_workgroups)
     m_renderingDevice->sync();
 }
 
+bool ComputeShader::is_initalized() const
+{
+    return m_initialized;
+}
+
 
 ComputeShader::ComputeShader(){}
 
@@ -165,3 +165,5 @@ ComputeShader::ComputeShader(const Ref<RDShaderFile> shader )
 
 
 }
+
+

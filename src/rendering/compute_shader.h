@@ -45,7 +45,7 @@ namespace PSS
             godot::TypedArray< godot::RDUniform> m_uniforms_data;
             godot::RenderingDevice * m_renderingDevice;
     
-         
+            bool m_initialized = false;
             
       
         public: 
@@ -55,9 +55,10 @@ namespace PSS
             void update_uniform(int32_t p_binding,const  godot::PackedByteArray& p_data);
             void compile_shader();
             void dispatch( godot::Vector3i p_workgroups);
-
             godot::PackedByteArray get_uniform_data(int32_t p_binding);
             
+            bool is_initalized() const;
+
             ComputeShader();
             ComputeShader(const godot::Ref<godot::RDShaderFile> shader );
         

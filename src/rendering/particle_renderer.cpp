@@ -33,7 +33,6 @@ void ParticleRenderer::_ready()
     if (Engine::get_singleton()->is_editor_hint())
     {
        
-        set_process_mode(Node::ProcessMode::PROCESS_MODE_DISABLED);
         return;
     }
     
@@ -80,27 +79,27 @@ void ParticleRenderer::_ready()
     
     
     
-    Vector2 size =m_viewport->get_texture()->get_size();
+    Vector2 size = m_viewport->get_texture()->get_size();
 
-    auto image = Image::create(size.x,size.y,false,Image::FORMAT_RGBAF);
-    m_texture = ImageTexture::create_from_image(image);
+    m_image = Image::create(size.x,size.y,false,Image::FORMAT_RGBAF);
+    m_texture = ImageTexture::create_from_image(m_image);
     material->set_shader_parameter("overlay",m_texture);
-
-
     m_computeShader = ComputeShader(m_renderingShader);
     
 
 
-    
+    /*
     m_computeShader.add_uniform(0,UniformType::Image,image);
-    m_computeShader.add_uniform(1,UniformType::Buffer, ParticleGPUEncoder::encode_buffer_ordered(particleSystem->get_particle_buffer(),m_viewport->get_camera_3d()->get_position()));
-    m_computeShader.add_uniform(1,UniformType::Buffer, ParticleGPUEncoder::encode_buffer_ordered(m_particleBuffer,m_viewport->get_camera_3d()->get_global_position()));
-  
-    m_computeShader.add_uniform(2,UniformType::Buffer,ParticleGPUEncoder::encode_camera(m_viewport->get_camera_3d()));
+    m_computeShader.add_uniform(1,UniformType::Buffer, ParticleGPUEncoder::encode_particle_ordered(m_particleBuffer,m_viewport->get_camera_3d()->get_global_position()));
+    m_computeShader.add_uniform(2,UniformType::Buffer, ParticleGPUEncoder::encode_particle_positions(m_particleBuffer));
+    m_computeShader.add_uniform(3,UniformType::Buffer, ParticleGPUEncoder::encode_particle_colors(m_particleBuffer));
+    m_computeShader.add_uniform(4,UniformType::Buffer,ParticleGPUEncoder::encode_camera(m_viewport->get_camera_3d()));
+    */
 
+    if(m_particleBuffer->get_particle_count() > 0)
+        initializeShader();
     
-    m_computeShader.compile_shader();
-
+   
     
   
 }
@@ -111,16 +110,72 @@ void ParticleRenderer::_process(double p_delta)
     if(Engine::get_singleton()->is_editor_hint())
         return;
 
-    Node::_process(p_delta);
 
-    m_computeShader.update_uniform(1,ParticleGPUEncoder::encode_buffer_ordered(m_particleBuffer,m_viewport->get_camera_3d()->get_global_position()));
-    m_computeShader.update_uniform(2,ParticleGPUEncoder::encode_camera(m_viewport->get_camera_3d()));
+
+
+
+
+
+    if(!m_computeShader.is_initalized())
+    {
+        if(m_particleBuffer->get_particle_count() > 0)
+            initializeShader();
+        return;
+
+    }
+    
+    
+
+    
+    updateShader();
+    
+
+
+
+    
+    
     Vector2 size = m_viewport->get_texture()->get_size();
-    m_computeShader.dispatch(Vector3i(size.x,size.y,1));
+    m_computeShader.dispatch(Vector3i(size.x,size.y ,1));
     auto data = m_computeShader.get_uniform_data(0);
     
     m_texture->update(Image::create_from_data(size.x,size.y,false,Image::FORMAT_RGBAF,data));
 }
+
+
+void ParticleRenderer::initializeShader()
+{
+    m_computeShader.add_uniform(0,UniformType::Image, m_image);
+    m_computeShader.add_uniform(1,UniformType::Buffer, ParticleGPUEncoder::encode_octree_particle_buffer(m_particleBuffer));
+    m_computeShader.add_uniform(2,UniformType::Buffer, ParticleGPUEncoder::encode_octree_octans(m_particleBuffer));
+    m_computeShader.add_uniform(3,UniformType::Buffer, ParticleGPUEncoder::encode_particle_positions(m_particleBuffer));
+    m_computeShader.add_uniform(4,UniformType::Buffer, ParticleGPUEncoder::encode_particle_colors(m_particleBuffer));
+    m_computeShader.add_uniform(5,UniformType::Buffer, ParticleGPUEncoder::encode_camera(m_viewport->get_camera_3d()));
+    
+    m_computeShader.compile_shader();
+
+
+}
+void ParticleRenderer::updateShader()
+{
+    /*
+    
+    m_computeShader.update_uniform(1,ParticleGPUEncoder::encode_particle_ordered(m_particleBuffer,m_viewport->get_camera_3d()->get_global_position()));   
+    m_computeShader.update_uniform(2, ParticleGPUEncoder::encode_particle_positions(m_particleBuffer));
+    m_computeShader.update_uniform(3,ParticleGPUEncoder::encode_particle_colors(m_particleBuffer));
+    m_computeShader.update_uniform(4,ParticleGPUEncoder::encode_camera(m_viewport->get_camera_3d()));
+    
+    */
+
+    
+    m_computeShader.update_uniform(1,ParticleGPUEncoder::encode_octree_particle_buffer(m_particleBuffer));   
+    m_computeShader.update_uniform(2,ParticleGPUEncoder::encode_octree_octans(m_particleBuffer));   
+    m_computeShader.update_uniform(3,ParticleGPUEncoder::encode_particle_positions(m_particleBuffer));
+    m_computeShader.update_uniform(4,ParticleGPUEncoder::encode_particle_colors(m_particleBuffer));
+    m_computeShader.update_uniform(5,ParticleGPUEncoder::encode_camera(m_viewport->get_camera_3d()));
+    
+    
+}
+
 
 /*
 PackedStringArray ParticleRenderer::_get_configuration_warnings()

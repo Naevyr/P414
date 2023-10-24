@@ -12,9 +12,19 @@ config_version=5
 
 config/name="Demo"
 run/main_scene="res://TestScene.tscn"
-config/features=PackedStringArray("4.0", "C#", "Forward Plus")
+config/features=PackedStringArray("4.1", "C#", "Forward Plus")
 config/icon="res://icon.svg"
+
+[display]
+
+window/size/viewport_width=1280
+window/size/viewport_height=720
 
 [dotnet]
 
 project/assembly_name="Demo"
+
+[rendering]
+
+shader_compiler/shader_cache/compress=false
+shader_compiler/shader_cache/use_zstd_compression=false

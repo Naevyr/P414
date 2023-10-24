@@ -18,9 +18,9 @@ PackedByteArray ParticleGPUEncoder::encode_buffer_ordered (Ref<ParticleBuffer> b
 
     std::sort(ordered.begin(),ordered.end(), [data,cameraPosition](Particle a, Particle b) {
         // You can use 'arg' within the lambda expression
-        return data.get_position(a).distance_to(cameraPosition) > data.get_position(b).distance_to(cameraPosition);
-        
         return data.get_position(a).distance_to(cameraPosition) < data.get_position(b).distance_to(cameraPosition);
+        
+        
     });
     
  
@@ -34,6 +34,39 @@ PackedByteArray ParticleGPUEncoder::encode_buffer_ordered (Ref<ParticleBuffer> b
     for (size_t i = 0; i < ordered.size(); i++)
     {
        bytes.append_array(encode_particle(ordered[i],buffer));
+    }
+
+    return bytes;
+    
+}
+
+
+PackedByteArray ParticleGPUEncoder::encode_particle_ordered (Ref<ParticleBuffer> buffer,godot::Vector3 cameraPosition)
+{
+    PackedByteArray bytes = PackedByteArray();
+    bytes.resize(4 + 4 * buffer->get_particle_count());
+ 
+    ParticleDataContainer & data = buffer->get_data();
+    std::vector<Particle> ordered = std::vector<Particle>(buffer->get_data().get_particles());
+
+    std::sort(ordered.begin(),ordered.end(), [data,cameraPosition](Particle a, Particle b) {
+        // You can use 'arg' within the lambda expression
+        return data.get_position(a).distance_to(cameraPosition) < data.get_position(b).distance_to(cameraPosition);
+        
+        
+    });
+    
+ 
+
+    
+
+ 
+   
+    bytes.encode_u32(0,buffer->get_particle_count());
+
+    for (size_t i = 0; i < ordered.size(); i++)
+    {
+       bytes.encode_u32(4 + i * 4, ordered[i]);
     }
 
     return bytes;
@@ -107,3 +140,92 @@ godot::PackedByteArray ParticleGPUEncoder::encode_camera(Camera3D * camera)
 }
 
 
+
+
+
+godot::PackedByteArray ParticleGPUEncoder::encode_particle_positions (godot::Ref<ParticleBuffer> buffer)
+{
+
+    PackedByteArray bytes = PackedByteArray();
+    bytes.resize(16 * buffer->get_particle_count());
+    for (auto &&particle : buffer->get_data().get_particles())
+    {
+        
+    
+        Vector3 position = buffer->get_data().get_position(particle);
+        bytes.encode_float(particle * 16, position.x);
+        bytes.encode_float(particle * 16 + 4, position.y);
+        bytes.encode_float(particle * 16 + 8, position.z);
+        bytes.encode_float(particle * 16 + 12, buffer->get_data().get_size(particle));
+    
+    
+    }
+
+    return bytes;
+    
+}
+godot::PackedByteArray ParticleGPUEncoder::encode_particle_colors (godot::Ref<ParticleBuffer> buffer)
+{
+    PackedByteArray bytes = PackedByteArray();  
+    bytes.resize(12 * buffer->get_particle_count());
+    for (auto &&particle : buffer->get_data().get_particles())
+    {
+
+        Color color = buffer->get_data().get_particle_color(particle);
+        bytes.encode_float(particle * 12, color.r);
+        bytes.encode_float(particle * 12 + 4, color.g);
+        bytes.encode_float(particle * 12 + 8, color.b);
+
+    
+    }
+
+    return bytes;
+    
+}
+
+
+
+godot::PackedByteArray ParticleGPUEncoder::encode_octree_particle_buffer (godot::Ref<ParticleBuffer> buffer)
+{
+    PackedByteArray bytes = PackedByteArray();
+    bytes.resize(4 + 4 * buffer->get_particle_count());
+    bytes.encode_u32(0,buffer->get_particle_count());
+
+
+    auto particle_buffer = buffer->get_octree().get_particle_array();
+    for (size_t i = 0; i < particle_buffer.size(); i++)
+    {
+        bytes.encode_u32(4 + 4 * i, particle_buffer[i]);
+    }
+    
+   return bytes;
+    
+
+}
+
+godot::PackedByteArray ParticleGPUEncoder::encode_octree_octans(godot::Ref<ParticleBuffer> buffer)
+{
+    PackedByteArray bytes = PackedByteArray();
+    auto octan_buffer = buffer->get_octree().get_octan_data();
+    bytes.resize(16 + 32 * octan_buffer.size());
+    bytes.encode_u32(0, octan_buffer.size());
+    //12 byte padding
+
+    for (size_t i = 0; i < octan_buffer.size(); i++)
+    {
+        bytes.encode_u32(16 + 32 * i, octan_buffer[i].childCount);
+
+        //4 byte padding
+        bytes.encode_u32(16 + 32 * i + 8 ,octan_buffer[i].particleStartIndex);
+        bytes.encode_u32(16 + 32 * i + 12, octan_buffer[i].particleCount);
+ 
+        bytes.encode_float(16 + 32 * i + 16, octan_buffer[i].box.position.x);
+        bytes.encode_float(16 + 32 * i + 20, octan_buffer[i].box.position.y);
+        bytes.encode_float(16 + 32 * i + 24, octan_buffer[i].box.position.z);
+        bytes.encode_float(16 + 32 * i + 28, octan_buffer[i].box.size);
+ 
+    }   
+    
+   return bytes;
+    
+}

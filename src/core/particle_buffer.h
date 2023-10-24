@@ -34,10 +34,16 @@ namespace PSS
             
 
         
-            unsigned int m_particleCount;
+            unsigned int m_particleCount = 0;
             ParticleDataContainer m_data;
             LinearOctree m_octree;
-        
+            
+
+
+            int m_octanParticleCount = 50;
+            int m_octanMaxDepth = 700;
+
+
             godot::Ref<godot::BoxMesh> m_bounds;
 
 
@@ -53,8 +59,7 @@ namespace PSS
             
             
             Particle add_particle(const godot::Ref<ElementalParticleResource> particleTemplate, godot::Vector3 position);
-            std::vector<Particle> add_cluster(const godot::Ref<ElementalParticleResource> particleTemplate, const godot::PackedVector3Array & positions);
-
+            void add_cluster(const godot::Ref<ElementalParticleResource> particleTemplate, const godot::PackedVector3Array & positions);
             void add_mesh(const godot::Ref<ElementalMeshResource> mesh);
 
 
@@ -66,7 +71,22 @@ namespace PSS
             void set_bounds(godot::Ref<godot::BoxMesh> convexBounds);
             godot::Ref<godot::BoxMesh> get_bounds() const;
 
+
+            void set_octan_particle_count(int octanParticleCount);
+            int get_octan_particle_count() const;
+
+            void set_octan_max_depth(int octanMaxDepth);
+            int get_octan_max_depth() const;
+
+
+
+
+
             ParticleDataContainer & get_data();
+
+
+
+            const LinearOctree & get_octree() const;
 
             
             ParticleBuffer();

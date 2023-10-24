@@ -47,16 +47,13 @@ namespace PSS
 
 
         private:
-            static int GetOctanLinearIndex(godot::Vector3i position);
-            static godot::Vector3i GetOctanRelativePosition(int index);
+            static int GetOctanLinearIndex(godot::Vector3 position);
+            static godot::Vector3 GetOctanRelativePosition(int index);
         
             
 
             std::vector<Box> m_particleBoxes;
             std::vector<Particle> m_particles;
-            
-            
-
             std::vector<OctanData> m_octans;
       
             
@@ -87,8 +84,8 @@ namespace PSS
             std::vector<Particle> query(godot::Vector3 position, float size) const;
             void insert(Particle particle, godot::Vector3 p_position, float p_size);
 
-            
-            std::vector<Particle> get_particle_array() const;
+            const std::vector<Particle>& get_particle_array() const;
+            const std::vector<OctanData>& get_octan_data() const;
 
             bool is_initialized() const;
 
