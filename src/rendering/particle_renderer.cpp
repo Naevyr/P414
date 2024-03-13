@@ -20,8 +20,12 @@
 #include <exception>
 
 
+
 using namespace PSS;
 using namespace godot;
+
+
+
 
 void ParticleRenderer::_ready()
 {
@@ -31,10 +35,8 @@ void ParticleRenderer::_ready()
 
 
     if (Engine::get_singleton()->is_editor_hint())
-    {
-       
         return;
-    }
+    
     
     auto particleSystem = Node::cast_to<ElementalSpellSystem>(get_parent());
 
@@ -84,23 +86,18 @@ void ParticleRenderer::_ready()
     m_image = Image::create(size.x,size.y,false,Image::FORMAT_RGBAF);
     m_texture = ImageTexture::create_from_image(m_image);
     material->set_shader_parameter("overlay",m_texture);
-    m_computeShader = ComputeShader(m_renderingShader);
+    m_renderingShaders = {ComputeShader(m_renderingShaderResource),ComputeShader(m_renderingShaderResource),ComputeShader(m_renderingShaderResource)};
+
+
+    
+
+    initializeRenderingShader();
+
+  
     
 
 
-    /*
-    m_computeShader.add_uniform(0,UniformType::Image,image);
-    m_computeShader.add_uniform(1,UniformType::Buffer, ParticleGPUEncoder::encode_particle_ordered(m_particleBuffer,m_viewport->get_camera_3d()->get_global_position()));
-    m_computeShader.add_uniform(2,UniformType::Buffer, ParticleGPUEncoder::encode_particle_positions(m_particleBuffer));
-    m_computeShader.add_uniform(3,UniformType::Buffer, ParticleGPUEncoder::encode_particle_colors(m_particleBuffer));
-    m_computeShader.add_uniform(4,UniformType::Buffer,ParticleGPUEncoder::encode_camera(m_viewport->get_camera_3d()));
-    */
-
-    if(m_particleBuffer->get_particle_count() > 0)
-        initializeShader();
-    
-   
-    
+    m_currentFrame = 0;
   
 }
 
@@ -113,21 +110,11 @@ void ParticleRenderer::_process(double p_delta)
 
 
 
-
-
-
-    if(!m_computeShader.is_initalized())
-    {
-        if(m_particleBuffer->get_particle_count() > 0)
-            initializeShader();
+    if(m_particleBuffer->get_particle_count() == 0)
         return;
 
-    }
-    
-    
+  
 
-    
-    updateShader();
     
 
 
@@ -135,46 +122,58 @@ void ParticleRenderer::_process(double p_delta)
     
     
     Vector2 size = m_viewport->get_texture()->get_size();
-    m_computeShader.dispatch(Vector3i(size.x,size.y ,1));
-    auto data = m_computeShader.get_uniform_data(0);
-    
+    auto data = m_renderingShaders[m_currentFrame].get_uniform_data(0);
     m_texture->update(Image::create_from_data(size.x,size.y,false,Image::FORMAT_RGBAF,data));
-}
 
 
-void ParticleRenderer::initializeShader()
-{
-    m_computeShader.add_uniform(0,UniformType::Image, m_image);
-    m_computeShader.add_uniform(1,UniformType::Buffer, ParticleGPUEncoder::encode_octree_particle_buffer(m_particleBuffer));
-    m_computeShader.add_uniform(2,UniformType::Buffer, ParticleGPUEncoder::encode_octree_octans(m_particleBuffer));
-    m_computeShader.add_uniform(3,UniformType::Buffer, ParticleGPUEncoder::encode_particle_positions(m_particleBuffer));
-    m_computeShader.add_uniform(4,UniformType::Buffer, ParticleGPUEncoder::encode_particle_colors(m_particleBuffer));
-    m_computeShader.add_uniform(5,UniformType::Buffer, ParticleGPUEncoder::encode_camera(m_viewport->get_camera_3d()));
+    updateRenderingShader();
+    m_renderingShaders[m_currentFrame].dispatch(Vector3i(size.x,size.y ,1));
     
-    m_computeShader.compile_shader();
 
-
+    m_currentFrame = (m_currentFrame + 1) % 3;
 }
-void ParticleRenderer::updateShader()
+
+
+void ParticleRenderer::initializeRenderingShader()
+{
+    for (size_t i = 0; i < 3; i++)
+    {
+        m_renderingShaders[i].add_uniform(0,UniformType::Image, m_image);
+        m_renderingShaders[i].add_uniform(1,UniformType::Buffer, ParticleGPUEncoder::encode_particle_ordered(m_particleBuffer,m_viewport->get_camera_3d()->get_global_position()));
+      
+        m_renderingShaders[i].add_uniform(2,UniformType::Buffer, ParticleGPUEncoder::encode_particle_positions(m_particleBuffer));
+        m_renderingShaders[i].add_uniform(3,UniformType::Buffer, ParticleGPUEncoder::encode_particle_colors(m_particleBuffer));
+        m_renderingShaders[i].add_uniform(4,UniformType::Buffer, ParticleGPUEncoder::encode_camera(m_viewport->get_camera_3d()));
+        
+        m_renderingShaders[i].compile_shader();
+
+    }
+    
+}
+void ParticleRenderer::updateRenderingShader()
 {
     /*
     
-    m_computeShader.update_uniform(1,ParticleGPUEncoder::encode_particle_ordered(m_particleBuffer,m_viewport->get_camera_3d()->get_global_position()));   
-    m_computeShader.update_uniform(2, ParticleGPUEncoder::encode_particle_positions(m_particleBuffer));
-    m_computeShader.update_uniform(3,ParticleGPUEncoder::encode_particle_colors(m_particleBuffer));
-    m_computeShader.update_uniform(4,ParticleGPUEncoder::encode_camera(m_viewport->get_camera_3d()));
+    m_renderingComputeShader.update_uniform(1,ParticleGPUEncoder::encode_particle_ordered(m_particleBuffer,m_viewport->get_camera_3d()->get_global_position()));   
+    m_renderingComputeShader.update_uniform(2, ParticleGPUEncoder::encode_particle_positions(m_particleBuffer));
+    m_renderingComputeShader.update_uniform(3,ParticleGPUEncoder::encode_particle_colors(m_particleBuffer));
+    m_renderingComputeShader.update_uniform(4,ParticleGPUEncoder::encode_camera(m_viewport->get_camera_3d()));
     
     */
 
     
-    m_computeShader.update_uniform(1,ParticleGPUEncoder::encode_octree_particle_buffer(m_particleBuffer));   
-    m_computeShader.update_uniform(2,ParticleGPUEncoder::encode_octree_octans(m_particleBuffer));   
-    m_computeShader.update_uniform(3,ParticleGPUEncoder::encode_particle_positions(m_particleBuffer));
-    m_computeShader.update_uniform(4,ParticleGPUEncoder::encode_particle_colors(m_particleBuffer));
-    m_computeShader.update_uniform(5,ParticleGPUEncoder::encode_camera(m_viewport->get_camera_3d()));
+    m_renderingShaders[m_currentFrame].update_uniform(1,ParticleGPUEncoder::encode_particle_ordered(m_particleBuffer,m_viewport->get_camera_3d()->get_global_position()));   
+    //m_renderingComputeShader.update_uniform(2,ParticleGPUEncoder::encode_octree_octans(m_particleBuffer));   
+    m_renderingShaders[m_currentFrame].update_uniform(2,ParticleGPUEncoder::encode_particle_positions(m_particleBuffer));
+    m_renderingShaders[m_currentFrame].update_uniform(3,ParticleGPUEncoder::encode_particle_colors(m_particleBuffer));
+    m_renderingShaders[m_currentFrame].update_uniform(4,ParticleGPUEncoder::encode_camera(m_viewport->get_camera_3d()));
     
     
 }
+
+
+
+
 
 
 /*
@@ -197,7 +196,8 @@ void ParticleRenderer::_bind_methods()
     
     ClassDB::bind_method(D_METHOD("set_rendering_shader"),&ParticleRenderer::set_rendering_shader);
     ClassDB::bind_method(D_METHOD("get_rendering_shader"),&ParticleRenderer::get_rendering_shader);
-    
+
+
 
     ClassDB::bind_method(D_METHOD("set_overlay_shader"),&ParticleRenderer::set_overlay_shader);
     ClassDB::bind_method(D_METHOD("get_overlay_shader"),&ParticleRenderer::get_overlay_shader);
@@ -211,6 +211,9 @@ void ParticleRenderer::_bind_methods()
     ADD_PROPERTY(godot::PropertyInfo(godot::Variant::OBJECT, "overlay_shader",
         PROPERTY_HINT_RESOURCE_TYPE, "Shader"), "set_overlay_shader", "get_overlay_shader");
 
+
+    ClassDB::bind_method(D_METHOD("get_particle_count"),&ParticleRenderer::get_total_particles);
+    ClassDB::bind_method(D_METHOD("get_rendered_particle_count"),&ParticleRenderer::get_rendered_particles);
 
    // ClassDB::add_property("ParticleRenderer",PropertyInfo(Variant::INT, "rendering_type",PROPERTY_HINT_ENUM,"DEBUG,NONE"), "set_rendering_type", "get_rendering_type");
     //ClassDB::add_property("ParticleRenderer",PropertyInfo(Variant::INT, "rendering_type"), "set_rendering_type", "get_rendering_type");
@@ -241,14 +244,23 @@ Ref<Shader> ParticleRenderer::get_overlay_shader() const
 
 void ParticleRenderer::set_rendering_shader(Ref<RDShaderFile> shader)
 {
-    m_renderingShader = shader;
+    m_renderingShaderResource = shader;
 }
 Ref<RDShaderFile> ParticleRenderer::get_rendering_shader() const
 {
-    return m_renderingShader;
+    return m_renderingShaderResource;
+}
+
+size_t PSS::ParticleRenderer::get_rendered_particles() const
+{
+    return m_particleBuffer->get_particle_data_container()->get_culled_particle_count();
 }
 
 
+size_t PSS::ParticleRenderer::get_total_particles() const
+{
+    return m_particleBuffer->get_particle_count();
+}
 
 ParticleRenderer::ParticleRenderer()
 {

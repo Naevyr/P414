@@ -43,9 +43,13 @@ void ElementalMeshResource::_bind_methods()
 
 
 
-void ElementalMeshResource::generate_mesh()
+void ElementalMeshResource::generate_mesh(float size)
 {
-
+    if(size <= 0.001)
+    {
+        ERR_PRINT("ElementalMeshResource: Size must be greater than 0.001");
+        return;
+    }
 
     m_meshNormals = static_cast<PackedVector3Array>(m_convexMesh->surface_get_arrays(0)[(int)Mesh::ARRAY_NORMAL]);
     m_meshPositions =  static_cast<PackedVector3Array>(m_convexMesh->surface_get_arrays(0)[(int)Mesh::ARRAY_VERTEX]);
@@ -53,7 +57,7 @@ void ElementalMeshResource::generate_mesh()
 
     m_sampleSize = Math::min(m_meshPositions.size(), (int64_t) Math::clamp(m_sampleSize,150,10000));
         
-    generateParticlePositions(Vector3(0,0,0));
+    generateParticlePositions(Vector3(0,0,0), size);
 }
 
 bool ElementalMeshResource::isPointInsideMesh(Vector3 point)
@@ -72,7 +76,7 @@ bool ElementalMeshResource::isPointInsideMesh(Vector3 point)
     return true;
 }
 
-void ElementalMeshResource::generateParticlePositions(Vector3 position)
+void ElementalMeshResource::generateParticlePositions(Vector3 position, float size)
 {
     
     
@@ -80,18 +84,18 @@ void ElementalMeshResource::generateParticlePositions(Vector3 position)
 
     if(!isPointInsideMesh(position))
         return;
-    generatePositionsVertically(position,true);
-    generatePositionsVertically(position,false);
+    generatePositionsVertically(position, true, size);
+    generatePositionsVertically(position, false, size);
 
 
     
 }
-void ElementalMeshResource::generatePositionsVertically(Vector3 tempPos, bool upwards)
+void ElementalMeshResource::generatePositionsVertically(Vector3 tempPos, bool upwards, float size)
 {
     //Offset for spawning a new particle
-    Vector3 deltaX = Vector3(1,0,0) *  m_templateParticle->get_size() * 2;
-    Vector3 deltaY = (upwards ? Vector3(0,1,0) : Vector3(0,-1,0)) * m_templateParticle->get_size() * 2;
-    Vector3 deltaZ = Vector3(0,0,1) * m_templateParticle->get_size() * 2;
+    Vector3 deltaX = Vector3(1,0,0) *  size;
+    Vector3 deltaY = (upwards ? Vector3(0,1,0) : Vector3(0,-1,0)) * size;
+    Vector3 deltaZ = Vector3(0,0,1) * size;
 
     if(!upwards)
         //DeltaY is already inverted

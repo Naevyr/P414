@@ -11,8 +11,8 @@ config_version=5
 [application]
 
 config/name="Demo"
-run/main_scene="res://TestScene.tscn"
-config/features=PackedStringArray("4.1", "C#", "Forward Plus")
+run/main_scene="res://Test2.tscn"
+config/features=PackedStringArray("4.2", "C#", "Forward Plus")
 config/icon="res://icon.svg"
 
 [display]
@@ -23,6 +23,10 @@ window/size/viewport_height=720
 [dotnet]
 
 project/assembly_name="Demo"
+
+[editor_plugins]
+
+enabled=PackedStringArray()
 
 [rendering]
 

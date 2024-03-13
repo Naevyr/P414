@@ -20,7 +20,16 @@
 
 namespace PSS
 {
-      class RenderingType
+
+    enum Buffering
+    {
+        NONE = 0,
+        DUAL = 1,
+        TRIPLE = 2
+    };
+
+
+    class RenderingType
     {  
         public:
             static const int DEBUG = 0;
@@ -37,15 +46,13 @@ namespace PSS
           
 
             godot::Ref<godot::Shader> m_overlayShader;
-            godot::Ref<godot::RDShaderFile> m_renderingShader;
+            godot::Ref<godot::RDShaderFile> m_renderingShaderResource;
+
 
             godot::Ref<ParticleBuffer> m_particleBuffer;
-            ComputeShader m_computeShader;
+            std::array<ComputeShader,3> m_renderingShaders;
+    
 
-
-            
-
-            
             godot::Viewport* m_viewport;
 
 
@@ -60,10 +67,11 @@ namespace PSS
 
 
 
-            void initializeShader();
-            void updateShader();
+            void initializeRenderingShader();
+            void updateRenderingShader();
 
-            
+    
+            unsigned short m_currentFrame;
                     
 
 
@@ -91,6 +99,8 @@ namespace PSS
             godot::Ref<godot::RDShaderFile> get_rendering_shader() const;
 
 
+            size_t get_rendered_particles() const;
+            size_t get_total_particles() const;
 
 
 
@@ -102,4 +112,4 @@ namespace PSS
 
             ParticleRenderer();
         };
-} // namespace P414.Rendering
+} 

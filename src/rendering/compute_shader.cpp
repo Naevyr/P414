@@ -92,10 +92,12 @@ void ComputeShader::add_uniform(int32_t p_binding,UniformType p_type, RID p_buff
 
 godot::PackedByteArray ComputeShader::get_uniform_data(int32_t p_binding)
 {
-        if(m_uniforms[p_binding].type == UniformType::Image)
-            return m_renderingDevice->texture_get_data(m_uniforms[p_binding].buffer,0);
-        else
-            return m_renderingDevice->buffer_get_data(m_uniforms[p_binding].buffer);
+    m_renderingDevice->sync();
+
+    if(m_uniforms[p_binding].type == UniformType::Image)
+        return m_renderingDevice->texture_get_data(m_uniforms[p_binding].buffer,0);
+    else
+        return m_renderingDevice->buffer_get_data(m_uniforms[p_binding].buffer);
 }
 
 void ComputeShader::update_uniform(int32_t p_binding,const PackedByteArray& p_data)
@@ -141,11 +143,12 @@ void ComputeShader::dispatch(Vector3i p_workgroups)
 
     m_renderingDevice->compute_list_end();
   
-
     m_renderingDevice->submit();
+}
+void ComputeShader::wait_for_completion()
+{
     m_renderingDevice->sync();
 }
-
 bool ComputeShader::is_initalized() const
 {
     return m_initialized;

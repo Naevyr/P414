@@ -20,8 +20,6 @@ namespace PSS
         
         public:
 
-            void set_size(float size);
-            float get_size() const;
         
             void set_color(godot::Color color);
             godot::Color get_color() const;

@@ -55,6 +55,7 @@ namespace PSS
             void update_uniform(int32_t p_binding,const  godot::PackedByteArray& p_data);
             void compile_shader();
             void dispatch( godot::Vector3i p_workgroups);
+            void wait_for_completion();
             godot::PackedByteArray get_uniform_data(int32_t p_binding);
             
             bool is_initalized() const;

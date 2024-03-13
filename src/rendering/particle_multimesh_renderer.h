@@ -1,5 +1,5 @@
 #include <godot_cpp/classes/multi_mesh_instance3d.hpp>
-
+#include <godot_cpp/classes/viewport.hpp>
 
 
 #include "core/particle_buffer.h"
@@ -13,6 +13,8 @@ namespace PSS
 
             godot::Ref<ParticleBuffer> m_particleBuffer;
             bool m_initialized = false;
+            godot::Viewport* m_viewport;
+
 
         protected:
             static void _bind_methods();

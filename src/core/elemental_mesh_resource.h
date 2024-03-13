@@ -26,8 +26,8 @@ namespace PSS
             
         private:
             bool isPointInsideMesh(godot::Vector3);
-            void generatePositionsVertically(godot::Vector3 tempPos, bool upwards);
-            void generateParticlePositions(godot::Vector3 position);
+            void generatePositionsVertically(godot::Vector3 tempPos, bool upwards, float size);
+            void generateParticlePositions(godot::Vector3 position, float size);
 
 
         
@@ -37,7 +37,7 @@ namespace PSS
         
         public:
         ElementalMeshResource();
-        void generate_mesh();
+        void generate_mesh(float size);
 
 
         //Export

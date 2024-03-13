@@ -348,6 +348,24 @@ const std::vector<LinearOctree::OctanData>& LinearOctree::get_octan_data() const
     return m_octans;
 }
 
+void LinearOctree::set_octan_particle_count(int octanParticleCount)
+{
+   m_particleCount = octanParticleCount;
+}
+int LinearOctree::get_octan_particle_count() const
+{
+    return m_particleCount;
+}
+
+void LinearOctree::set_octan_max_depth(int octanMaxDepth)
+{
+    m_maxLevel = octanMaxDepth;
+}
+int LinearOctree::get_octan_max_depth() const
+{
+    return m_maxLevel;
+}
+
 
 LinearOctree::LinearOctree(godot::Vector3 position, float size, unsigned int nodeCapacity, unsigned int maxLevel)
 {
@@ -379,4 +397,17 @@ LinearOctree::LinearOctree(godot::Vector3 position, float size, unsigned int nod
 
 }
 
-LinearOctree::LinearOctree () {};
+void LinearOctree::_bind_methods () {
+
+    
+    ClassDB::bind_method(D_METHOD("set_octan_particle_count"),&LinearOctree::set_octan_particle_count);
+    ClassDB::bind_method(D_METHOD("get_octan_particle_count"),&LinearOctree::get_octan_particle_count);    
+    ADD_PROPERTY(godot::PropertyInfo(godot::Variant::INT, "Octan Particle Count"), "set_octan_particle_count", "get_octan_particle_count");
+    
+
+    ClassDB::bind_method(D_METHOD("set_octan_max_depth"),&LinearOctree::set_octan_max_depth);
+    ClassDB::bind_method(D_METHOD("get_octan_max_depth"),&LinearOctree::get_octan_max_depth);    
+    ADD_PROPERTY(godot::PropertyInfo(godot::Variant::INT, "Octan Max Depth"), "set_octan_max_depth", "get_octan_max_depth");
+    
+};
+

@@ -7,11 +7,15 @@
 
 
 #include "core/particle.h"
+#include "core/particle_data_container.h"
+
+
+#include "godot_cpp/classes/resource.hpp"
 
 
 namespace PSS
 {
-    class LinearOctree
+    class LinearOctree : public ParticleDataContainer
     {
 
 
@@ -73,6 +77,10 @@ namespace PSS
             void subdivide(Octan parent);
             void insertParticle(Octan octan, Particle particle, Box particleBox);
 
+        protected:
+
+            static void _bind_methods();
+
 
         public:
             LinearOctree();
@@ -86,6 +94,13 @@ namespace PSS
 
             const std::vector<Particle>& get_particle_array() const;
             const std::vector<OctanData>& get_octan_data() const;
+
+            void set_octan_particle_count(int octanParticleCount);
+            int get_octan_particle_count() const;
+
+            void set_octan_max_depth(int octanMaxDepth);
+            int get_octan_max_depth() const;
+
 
             bool is_initialized() const;
 

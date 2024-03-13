@@ -24,28 +24,13 @@ namespace PSS
     class ParticleBuffer : public godot::Resource
     {   
         
-        typedef unsigned int Particle;
-        
 
-     
+
         GDCLASS(ParticleBuffer, godot::Resource)
         private:
+
+            godot::Ref<ParticleDataContainer>  m_dataContainer;     
             
-            
-
-        
-            unsigned int m_particleCount = 0;
-            ParticleDataContainer m_data;
-            LinearOctree m_octree;
-            
-
-
-            int m_octanParticleCount = 50;
-            int m_octanMaxDepth = 700;
-
-
-            godot::Ref<godot::BoxMesh> m_bounds;
-
 
         protected:
 
@@ -55,7 +40,7 @@ namespace PSS
         public:
 
             
-            std::vector<Particle> get_nearby_particles(godot::Vector3 position, float size) const;
+            const std::vector<Particle> get_nearby_particles(godot::Vector3 position, float size) const;
             
             
             Particle add_particle(const godot::Ref<ElementalParticleResource> particleTemplate, godot::Vector3 position);
@@ -71,23 +56,11 @@ namespace PSS
             void set_bounds(godot::Ref<godot::BoxMesh> convexBounds);
             godot::Ref<godot::BoxMesh> get_bounds() const;
 
-
-            void set_octan_particle_count(int octanParticleCount);
-            int get_octan_particle_count() const;
-
-            void set_octan_max_depth(int octanMaxDepth);
-            int get_octan_max_depth() const;
-
-
-
-
-
-            ParticleDataContainer & get_data();
-
-
-
-            const LinearOctree & get_octree() const;
-
+            void set_particle_size(float size);
+            float get_particle_size() const;
+        
+            godot::Ref<ParticleDataContainer> get_particle_data_container();
+            void set_particle_data_container(godot::Ref<ParticleDataContainer>  dataContainer);
             
             ParticleBuffer();
            

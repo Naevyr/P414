@@ -26,14 +26,13 @@ namespace PSS
 
 
         static godot::PackedByteArray encode_particle_ordered (godot::Ref<ParticleBuffer> buffer,godot::Vector3 cameraPosition);
-        static godot::PackedByteArray encode_buffer_ordered (godot::Ref<ParticleBuffer> buffer,godot::Vector3 cameraPosition);
-
         
         
         static godot::PackedByteArray encode_particle(Particle particle,godot::Ref<ParticleBuffer> buffer);
         static godot::PackedByteArray encode_camera(godot::Camera3D * camera);
       
-
+        
+        
         
         
     };

@@ -4,6 +4,7 @@
 #include <godot_cpp/classes/rendering_server.hpp>
 #include <godot_cpp/classes/engine.hpp>
 #include <godot_cpp/variant/variant.hpp>
+#include <godot_cpp/variant/utility_functions.hpp>
 using namespace PSS;
 using namespace godot;
 void ElementalSpellSystem::_bind_methods() 
@@ -50,7 +51,10 @@ void ElementalSpellSystem::_ready()
     if(Engine::get_singleton()->is_editor_hint())
     {
         if(m_debugMeshResource.is_valid())
-            m_debugMeshResource->generate_mesh();
+        {
+            float size = m_particleBuffer->get_particle_data_container()->get_particle_size();
+            m_debugMeshResource->generate_mesh(size);
+        }
 
         return;
     }
@@ -58,7 +62,13 @@ void ElementalSpellSystem::_ready()
 
     if(m_debugMeshResource.is_valid() && m_particleBuffer.is_valid())
         m_particleBuffer->add_mesh(m_debugMeshResource);
-      
+    
+    for (auto &&particle : m_particleBuffer->get_particle_data_container()->get_particles())
+    {
+        m_particleBuffer->get_particle_data_container()->set_particle_color(particle,Color::from_hsv((godot::UtilityFunctions::randi() % 24) / 24.0, 1, 1));
+    }
+    
+    
 }
 ElementalSpellSystem::ElementalSpellSystem()
 {

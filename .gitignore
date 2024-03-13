@@ -5,7 +5,8 @@ demo/*
 !demo/bin
 demo/bin/*
 !demo/bin/p414.gdextension
-
+!demo/bin/culled.glsl
+!demo/bin/overlayshader.gdshader
 
 extension_api.json
 
@@ -202,3 +203,5 @@ godot.creator.*
 
 # compile commands (https://clang.llvm.org/docs/JSONCompilationDatabase.html)
 compile_commands.json
+
+CppProperties.json
